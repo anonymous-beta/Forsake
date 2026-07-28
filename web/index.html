@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORSAKE — Command & Control v2.0</title>
+    <link rel="stylesheet" href="/css/forsake.css">
+    <style>
+        /* ═══════════════════════════════════════════════════════════════════
+           FORSAKE — Inline Login Styles
+           ═══════════════════════════════════════════════════════════════════ */
+        body { background: #0a0a0a; color: #e8e8e8; font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.3; pointer-events: none; }
+        .login-container { position: relative; z-index: 1; width: 420px; background: rgba(10,10,10,0.95); border: 1px solid #1a1a1a; padding: 48px 40px; text-align: center; }
+        .login-container::before { content: ''; position: absolute; top: -1px; left: 20%; right: 20%; height: 2px; background: linear-gradient(90deg, transparent, #ff001a, transparent); }
+        .login-title { font-size: 36px; font-weight: 900; letter-spacing: 8px; color: #ff001a; text-shadow: 0 0 30px rgba(255,0,26,0.4); margin-bottom: 4px; }
+        .login-subtitle { font-size: 12px; letter-spacing: 6px; color: #555; margin-bottom: 8px; }
+        .login-author { font-size: 10px; letter-spacing: 3px; color: #333; margin-bottom: 32px; }
+        .login-form { display: flex; flex-direction: column; gap: 16px; }
+        .login-form input { background: #0f0f0f; border: 1px solid #1a1a1a; padding: 14px 16px; color: #e8e8e8; font-family: 'Courier New', monospace; font-size: 13px; outline: none; transition: 0.2s; letter-spacing: 1px; }
+        .login-form input:focus { border-color: #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.15); }
+        .login-form input::placeholder { color: #333; }
+        .login-btn { background: transparent; border: 1px solid #ff001a; color: #ff001a; padding: 14px; font-family: 'Courier New', monospace; font-size: 13px; letter-spacing: 4px; cursor: pointer; transition: 0.2s; margin-top: 8px; }
+        .login-btn:hover { background: rgba(255,0,26,0.1); box-shadow: 0 0 25px rgba(255,0,26,0.2); }
+        .login-error { color: #ff001a; font-size: 11px; letter-spacing: 1px; min-height: 16px; }
+        .login-hint { font-size: 10px; color: #444; margin-top: 16px; letter-spacing: 1px; }
+        .hidden { display: none !important; }
+        .login-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="login-scanlines"></div>
+
+    <!-- ═══ LOGIN SCREEN ═══ -->
+    <div id="login-screen" class="login-container">
+        <div class="login-title">☠ FORSAKE</div>
+        <div class="login-subtitle">COMMAND & CONTROL v2.0</div>
+        <div class="login-author">by ANONYMOUS-BETA</div>
+        <form id="login-form" class="login-form" autocomplete="off">
+            <input type="text" id="username" placeholder="AGENT" autocomplete="off" spellcheck="false">
+            <input type="password" id="password" placeholder="ACCESS KEY" autocomplete="off">
+            <div class="login-error" id="login-error"></div>
+            <button type="submit" class="login-btn">⏻ AUTHENTICATE</button>
+        </form>
+        <div class="login-hint">Default: admin / forsake</div>
+    </div>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="dashboard" class="hidden">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-icon">☠</div>
+                <div class="sidebar-title">FORSAKE</div>
+                <div class="sidebar-version">v2.0</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="dashboard">
+                    <span class="nav-icon">◉</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-view="campaigns">
+                    <span class="nav-icon">◎</span>
+                    <span class="nav-label">Campaigns</span>
+                    <span class="nav-badge" id="campaign-badge">0</span>
+                </a>
+                <a href="#" class="nav-item" data-view="deploy">
+                    <span class="nav-icon">◈</span>
+                    <span class="nav-label">Deploy</span>
+                </a>
+                <a href="#" class="nav-item" data-view="landing">
+                    <span class="nav-icon">◻</span>
+                    <span class="nav-label">Landing Pages</span>
+                </a>
+                <a href="#" class="nav-item" data-view="resources">
+                    <span class="nav-icon">◐</span>
+                    <span class="nav-label">Resources</span>
+                </a>
+                <a href="#" class="nav-item" data-view="audit">
+                    <span class="nav-icon">◉</span>
+                    <span class="nav-label">Audit Log</span>
+                </a>
+                <a href="#" class="nav-item" data-view="settings">
+                    <span class="nav-icon">⚙</span>
+                    <span class="nav-label">Settings</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="connection-status" id="connection-status">⏻ Disconnected</div>
+                <a href="#" class="nav-item" id="logout-btn">
+                    <span class="nav-icon">⏻</span>
+                    <span class="nav-label">Disconnect</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="content" id="main-content">
+            <div class="content-header">
+                <h2 id="view-title">Dashboard</h2>
+                <div class="content-actions">
+                    <button class="btn btn-ghost" onclick="document.getElementById('terminal-overlay').classList.remove('hidden'); setTimeout(() => document.getElementById('terminal-input').focus(), 100);">$_ Terminal</button>
+                </div>
+            </div>
+            <div class="content-body" id="content-body">
+                <!-- Dynamic content rendered by JS -->
+                <div class="loading"><div class="spinner"></div>Loading...</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ═══ TERMINAL OVERLAY ═══ -->
+    <div id="terminal-overlay" class="terminal-overlay hidden">
+        <div class="terminal-header">
+            <span>☠ FORSAKE TERMINAL v2.0</span>
+            <button class="terminal-close" id="terminal-close">×</button>
+        </div>
+        <div class="terminal-output" id="terminal-output">
+            <div class="terminal-line"><span class="prompt">[SYSTEM]</span> Forsake Terminal initialized</div>
+            <div class="terminal-line"><span class="prompt">[SYSTEM]</span> Type 'help' for available commands</div>
+        </div>
+        <div class="terminal-input-line">
+            <span class="prompt">></span>
+            <input type="text" class="terminal-input" id="terminal-input" placeholder="_" spellcheck="false" autocomplete="off">
+        </div>
+    </div>
+
+    <!-- ═══ TOAST CONTAINER ═══ -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="/js/app.js"></script>
+</body>
+              </html>
