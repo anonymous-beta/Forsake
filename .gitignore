@@ -1,0 +1,48 @@
+# ─── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+*.pyc
+
+# ─── Virtual Environments ────────────────────────────────
+venv/
+.venv/
+env/
+
+# ─── IDE / Editor ────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ─── Forsake Data ────────────────────────────────────────
+/opt/forsake/
+forsake.db
+*.db
+*.sqlite
+
+# ─── SSL / Certificates ──────────────────────────────────
+*.pem
+*.key
+*.crt
+*.csr
+
+# ─── Logs ────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Secrets / Config Overrides ──────────────────────────
+.env
+*.env.local
+config.local.json
+forsake_config.json
+
+# ─── OS Artifacts ────────────────────────────────────────
+Thumbs.db
+*.bak
